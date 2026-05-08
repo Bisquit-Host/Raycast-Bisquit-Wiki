@@ -1,6 +1,12 @@
 import * as cheerio from "cheerio";
 
 const baseUrl = "https://wiki.bisquit.host";
+const defaultKeywords = [
+  "SFTP: /server-configuration/filezilla",
+  "subscription: /services/choose-plan",
+  "online-mode: /server-configuration/server-properties",
+  "online mode: /server-configuration/server-properties",
+].join("\n");
 
 export type WikiArticle = {
   title: string;
@@ -41,7 +47,9 @@ export async function loadArticles(
     "__VP_SITE_DATA__",
   );
   const sidebarArticles = flattenSidebar(siteData.themeConfig?.sidebar ?? []);
-  const keywordMap = parseCustomKeywords(customKeywords);
+  const keywordMap = parseCustomKeywords(
+    [defaultKeywords, customKeywords].join("\n"),
+  );
 
   return Promise.all(
     sidebarArticles.map(async ({ title, path, section }) => {
@@ -71,13 +79,7 @@ export function articleSearchText(article: WikiArticle): string {
 }
 
 export function articleAccessories(article: WikiArticle) {
-  const accessories = [{ text: article.section }];
-
-  if (article.keywords.length > 0) {
-    accessories.push({ text: article.keywords.join(", ") });
-  }
-
-  return accessories;
+  return [{ text: article.section }];
 }
 
 async function fetchPageHtml(chunkKey: string, hash: string): Promise<string> {
