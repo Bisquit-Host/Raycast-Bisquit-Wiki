@@ -77,6 +77,7 @@ function ArticleListItem({ article }: { article: WikiArticle }) {
           <Action
             title="Open Article"
             icon={Icon.Globe}
+            shortcut={{ modifiers: ["cmd"], key: "o" }}
             onAction={() => open(article.url)}
           />
           <Action.CopyToClipboard title="Copy Title" content={article.title} />
