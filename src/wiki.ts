@@ -65,6 +65,7 @@ export function articleSearchText(article: WikiArticle): string {
     article.path,
     article.section,
     article.content,
+    ...pathSearchTags(article.path),
     ...article.keywords,
   ].join(" ");
 }
@@ -175,4 +176,12 @@ function normalizeTarget(target: string): string {
   }
 
   return `/${trimmed.replace(/^\//, "")}`;
+}
+
+function pathSearchTags(path: string): string[] {
+  const lastComponent = path.split("/").filter(Boolean).at(-1) ?? "";
+
+  return decodeURIComponent(lastComponent)
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
 }
