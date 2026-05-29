@@ -6,39 +6,39 @@ import {
   List,
   Toast,
   closeMainWindow,
-  getPreferenceValues,
   open,
   showToast,
 } from "@raycast/api";
 import { useCachedPromise } from "@raycast/utils";
+import { useState } from "react";
 import {
-  articleAccessories,
-  articleSearchText,
-  loadArticles,
-  type WikiArticle,
+  excerptText,
+  resultUrl,
+  searchWiki,
+  type WikiSearchResult,
 } from "./wiki.js";
 
-type Preferences = {
-  customKeywords?: string;
-};
-
 export default function Command() {
-  const preferences = getPreferenceValues<Preferences>();
+  const [query, setQuery] = useState("");
   const { data, error, isLoading, revalidate } = useCachedPromise(
-    loadArticles,
-    [preferences.customKeywords ?? ""],
+    searchWiki,
+    [query],
+    {
+      keepPreviousData: true,
+    },
   );
 
   return (
     <List
       isLoading={isLoading}
-      searchBarPlaceholder="Search by title, link, content, or custom keywords"
+      onSearchTextChange={setQuery}
+      searchBarPlaceholder="Search Bisquit Wiki"
       throttle
     >
       {error ? (
         <List.EmptyView
           icon={Icon.Warning}
-          title="Could not load Bisquit Wiki"
+          title="Could not search Bisquit Wiki"
           description={error.message}
           actions={
             <ActionPanel>
@@ -50,49 +50,55 @@ export default function Command() {
             </ActionPanel>
           }
         />
-      ) : (
-        data?.map((article) => (
-          <ArticleListItem key={article.url} article={article} />
+      ) : query.trim() ? (
+        data?.results.map((result) => (
+          <SearchResultItem key={result.href} result={result} />
         ))
+      ) : (
+        <List.EmptyView
+          icon={Icon.MagnifyingGlass}
+          title="Search Bisquit Wiki"
+        />
       )}
     </List>
   );
 }
 
-function ArticleListItem({ article }: { article: WikiArticle }) {
+function SearchResultItem({ result }: { result: WikiSearchResult }) {
+  const url = resultUrl(result);
+
   return (
     <List.Item
-      title={article.title}
-      subtitle={article.path}
-      accessories={articleAccessories(article)}
-      keywords={articleSearchText(article).split(/\s+/)}
+      title={result.title}
+      subtitle={result.section}
+      accessories={[{ text: excerptText(result) }]}
       icon={Icon.Document}
       actions={
         <ActionPanel>
           <Action
-            title="Copy Link"
-            icon={Icon.Clipboard}
-            onAction={() => copyLink(article)}
-          />
-          <Action
             title="Open Article"
             icon={Icon.Globe}
-            shortcut={{ modifiers: ["cmd"], key: "o" }}
-            onAction={() => open(article.url)}
+            onAction={() => open(url)}
           />
-          <Action.CopyToClipboard title="Copy Title" content={article.title} />
+          <Action
+            title="Copy Link"
+            icon={Icon.Clipboard}
+            shortcut={{ modifiers: ["cmd"], key: "c" }}
+            onAction={() => copyLink(url, result.title)}
+          />
+          <Action.CopyToClipboard title="Copy Title" content={result.title} />
         </ActionPanel>
       }
     />
   );
 }
 
-async function copyLink(article: WikiArticle) {
-  await Clipboard.copy(article.url);
+async function copyLink(url: string, title: string) {
+  await Clipboard.copy(url);
   await showToast({
     style: Toast.Style.Success,
     title: "Copied link",
-    message: article.title,
+    message: title,
   });
   await closeMainWindow({ clearRootSearch: true });
 }

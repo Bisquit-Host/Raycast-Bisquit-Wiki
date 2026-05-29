@@ -7,10 +7,7 @@
 
 /* eslint-disable @typescript-eslint/ban-types */
 
-type ExtensionPreferences = {
-  /** Custom Keywords - Optional aliases, one per line: keyword: article title or URL, another keyword */
-  "customKeywords"?: string
-}
+type ExtensionPreferences = {}
 
 /** Preferences accessible in all the extension's commands */
 declare type Preferences = ExtensionPreferences

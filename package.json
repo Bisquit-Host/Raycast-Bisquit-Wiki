@@ -1,9 +1,9 @@
 {
   "name": "bisquit-wiki",
   "title": "Bisquit Wiki",
-  "version": "1.0.0",
-  "description": "Search Bisquit Wiki articles and copy links",
-  "author": "petr",
+  "version": "1.1.0",
+  "description": "Search Bisquit Wiki articles",
+  "author": "Pyzh",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -15,8 +15,7 @@
   },
   "dependencies": {
     "@raycast/api": "^1.104.17",
-    "@raycast/utils": "^2.2.4",
-    "cheerio": "^1.2.0"
+    "@raycast/utils": "^2.2.4"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^2.1.1",
@@ -30,17 +29,8 @@
     {
       "name": "search-articles",
       "title": "Search Articles",
-      "description": "Search Bisquit Wiki articles and copy links",
+      "description": "Search Bisquit Wiki articles",
       "mode": "view"
-    }
-  ],
-  "preferences": [
-    {
-      "name": "customKeywords",
-      "title": "Custom Keywords",
-      "description": "Optional aliases, one per line: keyword: article title or URL, another keyword",
-      "type": "textfield",
-      "required": false
     }
   ]
 }
