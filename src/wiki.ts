@@ -30,6 +30,7 @@ export async function searchWiki(query: string): Promise<WikiSearchState> {
   const response = await fetch(`${wikiOrigin}/wiki/search`, {
     method: "POST",
     headers: {
+      BisquitGeneric: "CoolVar",
       "content-type": "application/json",
     },
     body: JSON.stringify({ query: trimmedQuery }),
